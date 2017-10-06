@@ -47,14 +47,14 @@ class Database(object):
         document = self.chat_document(chat, since_id)
         filter = {Database.id_field: chat_id_str}
         result = self.chats.update_one(filter=filter, update={"$set": document}, upsert=True)
-        self.logger.info("update_one result: %s", result)
+        self.logger.info("update_one result: %s", str(result))
 
     def remove_chat(self, chat_id):
         self.logger.info(inspect.currentframe().f_code.co_name)
         chat_id_str = str(chat_id)
         self.logger.info("chat id: %s", chat_id_str)
         result = self.chats.remove({Database.id_field: chat_id_str})
-        self.logger.info("remove result: %s", result)
+        self.logger.info("remove result: %s", str(result))
 
     def save_tweet(self, tweet):
         self.logger.info(inspect.currentframe().f_code.co_name)
@@ -63,14 +63,14 @@ class Database(object):
         tweet_id = str(tweet.id)
         filter = {Database.id_field: tweet_id}
         result = self.tweets.update_one(filter=filter, update={"$set": document}, upsert=True)
-        self.logger.info("update_one result: %s", result)
+        self.logger.info("update_one result: %s", str(result))
 
     def remove_tweet(self, tweet_id):
         self.logger.info(inspect.currentframe().f_code.co_name)
         tweet_id_str = str(tweet_id)
         self.logger.info("tweet id: %s", tweet_id_str)
         result = self.tweets.remove({Database.id_field: tweet_id_str})
-        self.logger.info("remove result: %s", result)
+        self.logger.info("remove result: %s", str(result))
 
     def setup(self, client, db_name, tweets_name, chats_name):
         self.logger.info(inspect.currentframe().f_code.co_name)

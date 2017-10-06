@@ -93,14 +93,14 @@ class EpicBot(Bot):
 
     def job_fetch(self, job):
         self.logger.info("start job: %s", inspect.currentframe().f_code.co_name)
-        if self.since_id:
-            tweets = Cursor(self.twitter.user_timeline, id=self.user_id, since_id=self.since_id)
-        else:
-            tweets = Cursor(self.twitter.user_timeline, id=self.user_id, count=1)
+        self.logger.info("latest id: %s", self.since_id)
 
+        tweets = Cursor(self.twitter.user_timeline, id=self.user_id, since_id=self.since_id)
+
+        count = 5 if self.since_id else 1
         latest_id = None
-        for tweet in tweets.items():
-            latest_id = tweet.id if not latest_id else latest_id
+        for tweet in tweets.items(count):
+            latest_id = tweet.id if latest_id < tweet.id else latest_id
             self.db.save_tweet(tweet)
 
         if latest_id:
