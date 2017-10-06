@@ -1,5 +1,4 @@
 import inspect
-import json
 import logging
 from datetime import datetime
 
@@ -12,10 +11,10 @@ class Database(object):
 
     def __init__(self, host, port, username, password, db, tweets="tweets", chats="chats"):
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.logger.info(inspect.currentframe().f_code.co_name)
+        self.logger.debug(inspect.currentframe().f_code.co_name)
 
         uri = self.uri(username, password, host, port, db)
-        self.logger.info("mongodb uri: %s", uri)
+        self.logger.debug("mongodb uri: %s", uri)
 
         client = MongoClient(uri)
         self.setup(client, db, tweets, chats)
@@ -32,48 +31,53 @@ class Database(object):
         }
 
     @staticmethod
-    def chat_document(chat, since_id):
+    def chat_document(chat, latest_id):
         return {
             Database.id_field: str(chat.id),
             "title": chat.title,
             "subscribed": datetime.now(),
-            "since_id": str(since_id)
+            "latest_id": str(latest_id)
         }
 
-    def save_chat(self, chat, since_id):
-        self.logger.info(inspect.currentframe().f_code.co_name)
-        self.logger.info("chat: %s", chat)
+    def save_chat(self, chat, latest_id):
+        self.logger.debug(inspect.currentframe().f_code.co_name)
+
+        self.logger.debug("chat: %s", chat)
         chat_id_str = str(chat.id)
-        document = self.chat_document(chat, since_id)
+        document = self.chat_document(chat, latest_id)
         filter = {Database.id_field: chat_id_str}
         result = self.chats.update_one(filter=filter, update={"$set": document}, upsert=True)
-        self.logger.info("update_one result: %s", str(result))
+        self.logger.debug("update_one result: %s", str(result))
 
     def remove_chat(self, chat_id):
-        self.logger.info(inspect.currentframe().f_code.co_name)
+        self.logger.debug(inspect.currentframe().f_code.co_name)
+
         chat_id_str = str(chat_id)
-        self.logger.info("chat id: %s", chat_id_str)
+        self.logger.debug("chat id: %s", chat_id_str)
         result = self.chats.remove({Database.id_field: chat_id_str})
-        self.logger.info("remove result: %s", str(result))
+        self.logger.debug("remove result: %s", str(result))
 
     def save_tweet(self, tweet):
-        self.logger.info(inspect.currentframe().f_code.co_name)
-        self.logger.info("tweet: %s", tweet)
+        self.logger.debug(inspect.currentframe().f_code.co_name)
+
+        self.logger.debug("tweet: %s", tweet)
         document = self.tweet_document(tweet)
         tweet_id = str(tweet.id)
         filter = {Database.id_field: tweet_id}
         result = self.tweets.update_one(filter=filter, update={"$set": document}, upsert=True)
-        self.logger.info("update_one result: %s", str(result))
+        self.logger.debug("update_one result: %s", str(result))
 
     def remove_tweet(self, tweet_id):
-        self.logger.info(inspect.currentframe().f_code.co_name)
+        self.logger.debug(inspect.currentframe().f_code.co_name)
+
         tweet_id_str = str(tweet_id)
-        self.logger.info("tweet id: %s", tweet_id_str)
+        self.logger.debug("tweet id: %s", tweet_id_str)
         result = self.tweets.remove({Database.id_field: tweet_id_str})
-        self.logger.info("remove result: %s", str(result))
+        self.logger.debug("remove result: %s", str(result))
 
     def setup(self, client, db_name, tweets_name, chats_name):
-        self.logger.info(inspect.currentframe().f_code.co_name)
+        self.logger.debug(inspect.currentframe().f_code.co_name)
+
         exist = db_name in client.database_names()
         if exist:
             self.logger.warn("drop existing database")
@@ -86,7 +90,8 @@ class Database(object):
         return db
 
     def uri(self, user, pwd, host, port, db):
-        self.logger.info(inspect.currentframe().f_code.co_name)
+        self.logger.debug(inspect.currentframe().f_code.co_name)
+
         try:
             from urllib.parse import quote_plus
         except ImportError:
