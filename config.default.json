@@ -1,0 +1,19 @@
+{
+  "telegram": {
+    "token": ""
+  },
+  "twitter": {
+    "auth": {
+      "consumer_key": "",
+      "consumer_secret": ""
+    },
+    "polling_id": "itcua"
+  },
+  "mongodb": {
+    "host": "127.0.0.1",
+    "port": "27017",
+    "username": "",
+    "password": "",
+    "db": "itcfeedbot"
+  }
+}
