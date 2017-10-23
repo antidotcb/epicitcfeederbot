@@ -46,6 +46,9 @@ class EpicBot(Bot):
         self.logger.debug(inspect.currentframe().f_code.co_name)
 
         chat = update.message.chat
+        if chat.id != -1001096194569:
+            self.reply(update, "Only https://t.me/itcuachat is allowed to use this bot for now.")
+            return
         self.db.save_chat(chat, self.latest_id)
         self.chats = self.db.chats.find()
         self.reply(update, "You successfully subscribed to news.")
@@ -53,7 +56,11 @@ class EpicBot(Bot):
     def cmd_stop(self, update):
         self.logger.debug(inspect.currentframe().f_code.co_name)
 
-        chat = update.chat
+        chat = update.message.chat
+        user = update.message.from_user
+        if user and not (user.username == "antidotcb" or user.username == "St_Claus"):
+            self.reply(update, "Only administrators can unsubscribe.")
+            return
         self.db.remove_chat(chat.id)
         self.chats = self.db.chats.find()
         self.reply(update, "You successfully un-subscribed to news.")
@@ -150,11 +157,10 @@ class EpicBot(Bot):
             for chat in chats:
                 chat["id"] = chat["_id"]
                 latest_id = chat["latest_id"]
-                send = tweet_id > latest_id if latest_id else True
+                send = tweet_id > latest_id if latest_id and latest_id != u'None' else True
                 if send:
                     self.sendMessage(chat_id=chat["_id"], text=tweet["text"])
                     self.db.save_chat(Chat(**chat), tweet_id)
-
             self.db.remove_tweet(tweet_id)
 
         self.logger.debug("tweets after send: %s", self.db.tweets.count())
