@@ -1,3 +1,4 @@
+#!/usr/bin/python3.8
 import inspect
 import os.path
 import json
@@ -48,7 +49,8 @@ class App:
         self.db = Database(**options_mongodb)
 
         self.twitter = API(AppAuthHandler(**twitter_auth))
-        self.polling_id = self.twitter.get_user(polling_id).id
+        print("polling id: %s" % str(polling_id))
+        self.polling_id = self.twitter.get_user(screen_name=polling_id).id
 
         terminator = AppTerminator(self)
         bot = EpicBot(token=telegram_token,
@@ -76,8 +78,8 @@ class App:
         self.logger.debug(inspect.currentframe().f_code.co_name)
 
         job_queue = self.updater.job_queue
-        job_queue.run_repeating(EpicBot.job_fetch, 10)
-        job_queue.run_repeating(EpicBot.job_send, 5)
+        job_queue.run_repeating(EpicBot.job_fetch, 71)
+        job_queue.run_repeating(EpicBot.job_send, 17)
 
     def run(self):
         self.logger.info("start %s", inspect.currentframe().f_code.co_name)

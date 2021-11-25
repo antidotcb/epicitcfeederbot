@@ -1,1 +1,1 @@
-from EpicBot import EpicBot
+from .EpicBot import EpicBot

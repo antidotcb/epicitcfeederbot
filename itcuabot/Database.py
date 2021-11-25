@@ -81,8 +81,8 @@ class Database(object):
         exist = db_name in client.database_names()
         if exist:
             self.logger.warn("drop existing database")
-            client.drop_database(db_name)
-            # return TODO: remove previous line, uncomment this in production
+            # client.drop_database(db_name)
+            return # TODO: remove previous line, uncomment this in production
         db = client.get_database(db_name)
         statuses = db.get_collection(tweets_name)
         statuses.create_index([("created_at", pymongo.DESCENDING)], name="oldest", unique=True)
